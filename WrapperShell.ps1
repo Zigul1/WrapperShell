@@ -294,6 +294,9 @@ $winC.Add_LostFocus({$winC.BackColor = "#1d1e25"})
 $Panel.Controls.Add($winC)
 $winC.BringToFront()
 
+$toolTip = New-Object System.Windows.Forms.ToolTip
+$toolTip.SetToolTip($winC, "#123456")
+
 $winT = New-Object System.Windows.Forms.TextBox
 $winT.Location = New-Object System.Drawing.Point(360,38)
 $winT.Size = New-Object System.Drawing.Size(70,20)
@@ -304,6 +307,8 @@ $winT.Add_GotFocus({$winT.BackColor = "#000000"})
 $winT.Add_LostFocus({$winT.BackColor = "#1d1e25"})
 $Panel.Controls.Add($winT)
 $winT.BringToFront()
+
+$toolTip.SetToolTip($winT, "#123456")
 
 $radioButton1 = New-Object System.Windows.Forms.RadioButton
 $radioButton1.Text = "Yes"
@@ -371,6 +376,8 @@ $b1b.Add_LostFocus({$b1b.BackColor = "#1d1e25"})
 $Panel.Controls.Add($b1b)
 $b1b.BringToFront()
 
+$toolTip.SetToolTip($b1b, "#123456")
+
 $b1t = New-Object System.Windows.Forms.TextBox
 $b1t.Location = New-Object System.Drawing.Point(400,98)
 $b1t.Size = New-Object System.Drawing.Size(70,20)
@@ -381,6 +388,8 @@ $b1t.Add_GotFocus({$b1t.BackColor = "#000000"})
 $b1t.Add_LostFocus({$b1t.BackColor = "#1d1e25"})
 $Panel.Controls.Add($b1t)
 $b1t.BringToFront()
+
+$toolTip.SetToolTip($b1t, "#123456")
 
 $b1tx = New-Object System.Windows.Forms.TextBox
 $b1tx.Location = New-Object System.Drawing.Point(515,98)
@@ -430,6 +439,8 @@ $b2b.Add_LostFocus({$b2b.BackColor = "#1d1e25"})
 $Panel.Controls.Add($b2b)
 $b2b.BringToFront()
 
+$toolTip.SetToolTip($b2b, "#123456")
+
 $b2t = New-Object System.Windows.Forms.TextBox
 $b2t.Location = New-Object System.Drawing.Point(400,182)
 $b2t.Size = New-Object System.Drawing.Size(70,20)
@@ -440,6 +451,8 @@ $b2t.Add_GotFocus({$b2t.BackColor = "#000000"})
 $b2t.Add_LostFocus({$b2t.BackColor = "#1d1e25"})
 $Panel.Controls.Add($b2t)
 $b2t.BringToFront()
+
+$toolTip.SetToolTip($b2t, "#123456")
 
 $b2tx = New-Object System.Windows.Forms.TextBox
 $b2tx.Location = New-Object System.Drawing.Point(515,182)
@@ -506,9 +519,17 @@ $ButtonPS1.Add_Click({
     Start-Sleep 1
     if ("$($LabelSaveP.Text)" -eq "") {
         $textBoxPS1.Text = "File not created; check save path and chosen settings"
+        return
+    } elseif (("$($LabelSaveP.Text)" -eq "\carrier.ps1") -or ("$($LabelSaveP.Text)" -eq $null)) {
+        $textBoxPS1.Text = "File not created; set a 'carrier.ps1' path and try again"
+        return
     } else {
-        if (("$($LabelSaveP.Text)" -eq "\carrier.ps1") -or ("$($LabelSaveP.Text)" -eq $null)) {
-            $textBoxPS1.Text = "File not created; set a 'carrier.ps1' path and try again"
+        if ($imP.text -or $teP.text) {
+            if (([int]$($imP.text) + [int]$($teP.text)) -ne 100) {
+                [System.Windows.Forms.MessageBox]::Show("The two section percentages are not correct: their sum must be 100", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+                $textBoxPS1.Text = ""
+                return
+            }            
         }
         # Creazione del file carrier.ps1
         $script = @"        
