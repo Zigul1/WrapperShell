@@ -1,4 +1,6 @@
 # WrapperShell #
+(articolo in italiano [qui](https://turbolab.it/sicurezza-13/wrappershell-archiviare-visualizzare-cifrare-autodistruggere-immagini-testo-powershell-4267)  ![image](https://github.com/user-attachments/assets/fff61062-49ca-4c48-b82e-c1515ac544dc)
+)
 
 This script opens a GUI to set another PowerShell script, called "*__carrier.ps1__*", that will bring and show an image and/or some text in a Windows Form. Some graphical elements can be customized and it's possible to add one or two buttons to run some PowerShell code.
 
