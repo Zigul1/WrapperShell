@@ -889,7 +889,7 @@ Add-Type -AssemblyName System.Drawing
 `$form.FormBorderStyle = "FixedSingle"
 
 `$passwordTextBox = New-Object System.Windows.Forms.TextBox
-`$passwordTextBox.Location = New-Object System.Drawing.Point(17,30)
+`$passwordTextBox.Location = New-Object System.Drawing.Point(12,30)
 `$passwordTextBox.Size = New-Object System.Drawing.Size(260,30)
 `$passwordTextBox.PasswordChar = [char]"*"
 `$passwordTextBox.Font = "Verdana, 12"
@@ -903,18 +903,13 @@ Add-Type -AssemblyName System.Drawing
 `$submitButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
 
 `$submitButton.Add_Click({
-    try {
-        `$password = `$passwordTextBox.Text
-        
-        if (`$password -eq "") {
-            [System.Windows.Forms.MessageBox]::Show("Insert a password", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
-        } else {
-            `$global:password = `$passwordTextBox.Text
-            `$form.Close()
-        }
-    }
-    catch {
-        [System.Windows.Forms.MessageBox]::Show("Error: `$_", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
+    `$password = `$passwordTextBox.Text
+    if (`$password -eq "") {
+        [System.Windows.Forms.MessageBox]::Show("Insert a password", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+        Stop-Process -Id `$PID
+    } else {
+        `$global:password = `$passwordTextBox.Text
+        `$form.Close()
     }
 })
 
@@ -936,10 +931,7 @@ if ("`$(`$ps3)" -eq "$($keyP)") {
     # Finestra password errata
     Add-Type -AssemblyName System.Windows.Forms
     Add-Type -AssemblyName System.Drawing
-    
-    `$consolePtr = [Console.Window]::GetConsoleWindow()
-    [Console.Window]::ShowWindow(`$consolePtr, 0)
-    
+
     `$main_form = New-Object System.Windows.Forms.Form
     `$main_form.Text ='WRONG PASSWORD'
     `$main_form.Opacity = 0.95
