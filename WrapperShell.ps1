@@ -71,10 +71,12 @@ Function FileImg ($InitialDirectory) {
     If ($OpenFileDialog.ShowDialog() -eq "Cancel") {
         [System.Windows.Forms.MessageBox]::Show("No file selected", "Warning", 0,
         [System.Windows.Forms.MessageBoxIcon]::Exclamation) | Out-Null
+        return $Global:ImgFile = $null, $Global:ImgPath = $null
+    } else {
+        $Global:ImgFile = $OpenFileDialog.SafeFileName
+        $Global:ImgPath = $OpenFileDialog.FileName
+        Return $ImgFile
     }
-    $Global:ImgFile = $OpenFileDialog.SafeFileName
-    $Global:ImgPath = $OpenFileDialog.FileName
-    Return $ImgFile
 }
 
 $ButtonImg.Add_Click({
@@ -412,13 +414,58 @@ $Panel.Controls.Add($Label4)
 
 $code1 = New-Object System.Windows.Forms.TextBox
 $code1.Location = New-Object System.Drawing.Point(10,150)
-$code1.Size = New-Object System.Drawing.Size(700,20)
+$code1.Size = New-Object System.Drawing.Size(600,20)
 $code1.Font = "Verdana, 10"
 $code1.BackColor = "#1d1e25"
 $code1.ForeColor = "#ffffff"
 $code1.Add_GotFocus({$code1.BackColor = "#000000"})
 $code1.Add_LostFocus({$code1.BackColor = "#1d1e25"})
 $Panel.Controls.Add($code1)
+
+[System.Windows.Forms.Button]$Script1 = @{
+    Location = New-Object System.Drawing.Point(620,148)
+    Size = New-Object System.Drawing.Size(90,25)
+    Text = "Add PS1"
+    Font = "Verdana, 10"
+    BackColor = "#101c28"
+}
+$panel.Controls.Add($Script1)
+
+Function File1PS1 ($InitialDirectory) {
+    $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+    $OpenFileDialog.Title = "Select a PS1 script"
+    $OpenFileDialog.InitialDirectory = $InitialDirectory
+    $OpenFileDialog.filter = “PS1 files (*.ps1)|*.ps1”
+    If ($OpenFileDialog.ShowDialog() -eq "Cancel") {
+        [System.Windows.Forms.MessageBox]::Show("No script selected", "Error", 0,
+        [System.Windows.Forms.MessageBoxIcon]::Exclamation) | Out-Null
+        $Script1.ForeColor = "#ffffff"
+		$LabelS1.SendToBack()
+        $box1.Checked = $false
+        return $Global:1PS1File = $false
+    } else {
+        $Script1.ForeColor = "#00ff00"
+        $LabelS1.BringToFront()
+        $box1.Checked = $true
+        $Global:1PS1File = $OpenFileDialog.FileName
+        $LabelS1.text = $1PS1File
+        Return $1PS1File
+    }
+}
+
+$Script1.Add_Click({
+    File1PS1
+	$code1.text = ""
+})
+
+[System.Windows.Forms.Label]$LabelS1 = @{
+    Font = "Verdana, 11"
+    Location = New-Object System.Drawing.Point(10,150)
+    Size = New-Object System.Drawing.Size(600,25)
+    AutoEllipsis = $true
+    BackColor = "#101c28"
+}
+$panel.Controls.Add($LabelS1)
 
 [System.Windows.Forms.CheckBox]$box2 = @{
     Font = "Verdana, 10"
@@ -475,13 +522,58 @@ $Panel.Controls.Add($Label6)
 
 $code2 = New-Object System.Windows.Forms.TextBox
 $code2.Location = New-Object System.Drawing.Point(10,235)
-$code2.Size = New-Object System.Drawing.Size(700,80)
+$code2.Size = New-Object System.Drawing.Size(600,80)
 $code2.Font = "Verdana, 10"
 $code2.BackColor = "#1d1e25"
 $code2.ForeColor = "#ffffff"
 $code2.Add_GotFocus({$code2.BackColor = "#000000"})
 $code2.Add_LostFocus({$code2.BackColor = "#1d1e25"})
 $Panel.Controls.Add($code2)
+
+[System.Windows.Forms.Button]$Script2 = @{
+    Location = New-Object System.Drawing.Point(620,233)
+    Size = New-Object System.Drawing.Size(90,25)
+    Text = "Add PS1"
+    Font = "Verdana, 10"
+    BackColor = "#101c28"
+}
+$panel.Controls.Add($Script2)
+
+Function File2PS1 ($InitialDirectory) {
+    $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+    $OpenFileDialog.Title = "Select a PS1 script"
+    $OpenFileDialog.InitialDirectory = $InitialDirectory
+    $OpenFileDialog.filter = “PS1 files (*.ps1)|*.ps1”
+    If ($OpenFileDialog.ShowDialog() -eq "Cancel") {
+        [System.Windows.Forms.MessageBox]::Show("No script selected", "Error", 0,
+        [System.Windows.Forms.MessageBoxIcon]::Exclamation) | Out-Null
+        $Script2.ForeColor = "#ffffff"
+        $LabelS2.SendToBack()
+        $box2.Checked = $false
+        return $Global:2PS1File = $false
+    } else {
+        $Script2.ForeColor = "#00ff00"
+        $LabelS2.BringToFront()
+        $box2.Checked = $true
+        $Global:2PS1File = $OpenFileDialog.FileName
+        $LabelS2.text = $2PS1File
+        Return $2PS1File
+    }
+}
+
+$Script2.Add_Click({
+    File2PS1
+    $code2.text = ""
+})
+
+[System.Windows.Forms.Label]$LabelS2 = @{
+    Font = "Verdana, 11"
+    Location = New-Object System.Drawing.Point(10,235)
+    Size = New-Object System.Drawing.Size(600,25)
+    AutoEllipsis = $true
+    BackColor = "#101c28"
+}
+$panel.Controls.Add($LabelS2)
 
 
 # Creazione script
@@ -635,7 +727,13 @@ $(if ($box1.checked) {
 `$ButtonOK.BringToFront()
 
 `$ButtonOK.Add_Click({
-    & {$($code1.text)}
+    $(if (($code1.text -eq "") -and $1PS1File) {
+        $exec1 = Get-Content -Path $1PS1File -Raw
+    } else {
+        $exec1 = $($code1.text)
+    })
+    `$run1 = '$($exec1)'
+    `$process = Start-Process powershell -ArgumentList "-Command", `$run1 -PassThru
 })
 "@})
 
@@ -667,7 +765,13 @@ $(if ($box2.checked) {
 `$ButtonCanc.BringToFront()
 
 `$ButtonCanc.Add_Click({
-    & {$($code2.text)}
+    $(if (($code2.text -eq "") -and $2PS1File) {
+        $exec2 = Get-Content -Path $2PS1File -Raw
+    } else {
+        $exec2 = $($code2.text)
+    })
+    `$run2 = '$($exec2)'
+    `$process = Start-Process powershell -ArgumentList "-Command", `$run2 -PassThru
 })
 "@})
 
@@ -883,7 +987,7 @@ if ("`$(`$ps3)" -eq "$($keyP)") {
             $textBoxPS1.Text = "File created; if the password is correct, wait for it to be deciphered and opened"
             & "$($LabelSaveP.Text)"
         } elseif ($CheckBoxP.Checked) {
-            $textBoxPS1.Text = "File 'carrier.ps1' saved; wait for it to open"
+            $textBoxPS1.Text = "File 'carrier.ps1' saved; wait for it to open or check for errors"
             & "$($LabelSaveP.Text)"
         }
     }
