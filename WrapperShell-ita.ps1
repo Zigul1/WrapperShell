@@ -685,20 +685,20 @@ public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 `$tableLayoutPanel.Controls.Add(`$pictureBox, 0, 0)
 
 # Creazione del box per il testo
-`$randomTextLabel = New-Object System.Windows.Forms.TextBox
-`$randomTextLabel.BackColor = "$(if ($winC.Text -ne "") { $winC.Text } else { '#434c56' })"
-`$randomTextLabel.ForeColor = "$(if ($winT.Text -ne "") { $winT.Text } else { '#ffffff' })"
-`$randomTextLabel.Font = "Verdana, 12"
-`$randomTextLabel.Multiline = `$true  # Enable multiline
-`$randomTextLabel.ScrollBars = "$(if ($radioButton1.Checked) { 'Vertical'} else { 'None' })"
-`$randomTextLabel.BorderStyle = [System.Windows.Forms.BorderStyle]::None
-`$randomTextLabel.Dock = [System.Windows.Forms.DockStyle]::Fill
-`$randomTextLabel.Text = @'
+`$randomText = New-Object System.Windows.Forms.TextBox
+`$randomText.BackColor = "$(if ($winC.Text -ne "") { $winC.Text } else { '#434c56' })"
+`$randomText.ForeColor = "$(if ($winT.Text -ne "") { $winT.Text } else { '#ffffff' })"
+`$randomText.Font = "Verdana, 12"
+`$randomText.Multiline = `$true  # Enable multiline
+`$randomText.ScrollBars = "$(if ($radioButton1.Checked) { 'Vertical'} else { 'None' })"
+`$randomText.BorderStyle = [System.Windows.Forms.BorderStyle]::None
+`$randomText.Dock = [System.Windows.Forms.DockStyle]::Fill
+`$randomText.Text = @'
 $($text.text)
 '@
 
 # Aggiunta Label con testo nella colonna destra di TableLayoutPanel
-`$tableLayoutPanel.Controls.Add(`$randomTextLabel, 1, 0)
+`$tableLayoutPanel.Controls.Add(`$randomText, 1, 0)
 
 # Bottone 1
 $(if ($box1.checked) {
@@ -784,6 +784,15 @@ $(if ($CheckBoxD.Checked) {
 "Start-Sleep `$stext.text
 `$currentScriptPath = `$MyInvocation.MyCommand.Path
 Remove-Item -Path `$currentScriptPath -Force"
+})
+
+`$main_form.Add_Load({
+    # Set focus to the TextBox
+    `$randomText.Focus()
+    
+    # Deselect the text by setting the selection start and length to 0
+    `$randomText.SelectionStart = `$randomText.Text.Length
+    `$randomText.SelectionLength = 0
 })
 
 # Visualizzazione Form
